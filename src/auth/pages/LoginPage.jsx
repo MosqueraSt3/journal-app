@@ -1,14 +1,38 @@
+import { useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link as RouterLink } from 'react-router-dom';
 
 import { Google } from '@mui/icons-material';
-import { Button, Grid, Link, TextField, Typography } from '@mui/material';
+import { Alert, Button, Grid, Link, TextField, Typography } from '@mui/material';
 
 import { AuthLayout } from '../layout/AuthLayout';
+import { useForm } from '../../hooks';
+import { startSignInWithEmailPassword, startGoogleSignIn } from '../../store/auth';
+import { FirebaseAuth } from '../../firebase/config';
 
 export const LoginPage = () => {
+
+    const { status, errorMessage } = useSelector( state => state.auth );
+
+    const dispatch = useDispatch()
+
+    const { email, password, onInputChange } = useForm({
+        email: '',
+        password: '',
+    });
+
+    const isAuthenticating = useMemo( () => status === 'checking', [ status ]);
+
+    const onSubmit = ( e ) => {
+        e.preventDefault();
+        dispatch( startSignInWithEmailPassword({email, password}) );
+    };
+
+    const onGoogleSignIn = () => dispatch( startGoogleSignIn() );;
+
     return (
         <AuthLayout title='Login'>
-            <form>
+            <form onSubmit={ onSubmit } className='animate__animated animate__fadeIn animate__faster'>
                 <Grid container>
                     <Grid item 
                         xs={ 12 }
@@ -19,6 +43,9 @@ export const LoginPage = () => {
                             type='email'
                             placeholder='email@example.com'
                             fullWidth
+                            name='email'
+                            value={ email }
+                            onChange={ onInputChange }
                         />
                     </Grid>
 
@@ -31,7 +58,20 @@ export const LoginPage = () => {
                             type='password'
                             placeholder='password'
                             fullWidth
+                            name='password'
+                            value={ password }
+                            onChange={ onInputChange }
                         />
+                    </Grid>
+
+                    <Grid container display={ !!errorMessage ? '' : 'none' } sx={{ mt: 1}}>
+                        <Grid item
+                            xs={ 12 }
+                        >
+                            <Alert severity='error'>
+                                { errorMessage }
+                            </Alert>
+                        </Grid>
                     </Grid>
 
                     <Grid container
@@ -45,6 +85,8 @@ export const LoginPage = () => {
                             <Button 
                                 variant="contained" 
                                 fullWidth
+                                type='submit'
+                                disabled={ isAuthenticating }
                             >Login</Button>
                         </Grid>
 
@@ -55,6 +97,8 @@ export const LoginPage = () => {
                             <Button 
                                 variant="contained" 
                                 fullWidth
+                                onClick={ onGoogleSignIn }
+                                disabled={ isAuthenticating }
                             >
                                 <Google />
                                 <Typography sx={{ ml: 1 }}>Google</Typography>
