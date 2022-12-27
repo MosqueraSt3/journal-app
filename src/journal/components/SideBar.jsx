@@ -1,10 +1,12 @@
 import { LocalFireDepartment, TurnedInNot } from '@mui/icons-material';
 import { Box, Divider, Drawer, Grid, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Toolbar, Typography } from '@mui/material';
 import { useSelector } from 'react-redux';
+import { SideBarItem } from './SideBarItem';
 
 export const SideBar = ({ drawerWidth }) => {
 
     const { displayName } = useSelector((state) => state.auth);
+    const { notes } = useSelector((state) => state.journal);
 
     return (
         <Box
@@ -26,19 +28,7 @@ export const SideBar = ({ drawerWidth }) => {
                 <Divider />
                 <List>
                     {
-                        ['January', 'February', 'March', 'April'].flatMap(( month ) => (
-                            <ListItem key={ month } disablePadding>
-                                <ListItemButton>
-                                    <ListItemIcon>
-                                        <TurnedInNot />
-                                    </ListItemIcon>
-                                    <Grid container>
-                                        <ListItemText primary={ month } />
-                                        <ListItemText secondary={ 'lorem ipsum dolor' } />
-                                    </Grid>
-                                </ListItemButton>
-                            </ListItem>
-                        ))
+                        notes.flatMap(( note ) => (<SideBarItem key={ note.id } note={ note } />))
                     }
                 </List>
             </Drawer>
