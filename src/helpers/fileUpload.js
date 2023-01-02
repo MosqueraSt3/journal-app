@@ -1,5 +1,5 @@
 export const fileUpload = async (file) => {
-    if (!file) throw new Error('File is required');
+    if (!file) return null;
     const cloudUrl = 'https://api.cloudinary.com/v1_1/ddao1t4ac/upload';
 
     const formData = new FormData();
@@ -15,8 +15,7 @@ export const fileUpload = async (file) => {
         const cloudResponse = await response.json();
         return cloudResponse.secure_url;
     } catch (error) {
-        console.log(error);
-        throw new Error(error.message);
+        return null;
     }
 
 }
